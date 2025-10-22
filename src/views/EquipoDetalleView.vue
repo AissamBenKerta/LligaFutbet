@@ -2,179 +2,159 @@
   <v-app>
     <AppHeader />
 
-    <v-main class="main-content">
-      <v-container class="py-8">
+    <v-main class="bg-grey-lighten-4">
+      <v-container :fluid="$vuetify.display.xs" class="py-6">
         <!-- Loading -->
-        <div v-if="loading" class="text-center py-12">
-          <v-progress-circular indeterminate color="primary" size="48"></v-progress-circular>
-        </div>
+        <v-row v-if="loading" justify="center" class="py-12">
+          <v-progress-circular indeterminate color="primary" :size="$vuetify.display.xs ? 40 : 48"></v-progress-circular>
+        </v-row>
 
         <div v-else-if="equipo">
           <!-- Botón volver -->
-          <v-btn variant="text" color="primary" @click="volver" class="mb-4">
+          <v-btn 
+            variant="text" 
+            color="primary" 
+            @click="volver" 
+            :size="$vuetify.display.xs ? 'small' : 'default'"
+            class="mb-4"
+          >
             <v-icon start>mdi-arrow-left</v-icon>
             Volver
           </v-btn>
 
           <!-- Header del Equipo -->
-          <v-card elevation="0" class="equipo-header-card mb-6">
-            <div class="equipo-header-banner">
-              <v-container class="py-8">
-                <div class="d-flex align-center">
-                  <v-avatar color="white" size="120" class="elevation-4 mr-6">
-                    <v-icon color="primary" size="64">mdi-shield</v-icon>
-                  </v-avatar>
-                  <div>
-                    <h1 class="text-h3 font-weight-bold text-white mb-2">{{ equipo.nombre }}</h1>
-                    <div class="d-flex gap-3 flex-wrap">
-                      <v-chip color="white" variant="flat">
-                        <v-icon start size="18" color="primary">mdi-trophy</v-icon>
-                        {{ equipo.division === 1 ? 'Primera' : 'Segunda' }} División
-                      </v-chip>
-                      <v-chip color="white" variant="flat">
-                        <v-icon start size="18" color="primary">mdi-account-group</v-icon>
-                        {{ plantilla.length }} Jugadores
-                      </v-chip>
-                      <v-chip color="white" variant="flat">
-                        <v-icon start size="18" color="primary">mdi-trophy</v-icon>
-                        {{ estadisticas.posicion }}º en clasificación
-                      </v-chip>
-                    </div>
-                  </div>
-                </div>
-              </v-container>
+          <v-card elevation="0" class="rounded-lg mb-6 overflow-hidden">
+            <div class="equipo-banner pa-8 text-center">
+              <v-avatar 
+                :size="$vuetify.display.xs ? 80 : 120" 
+                :color="getLogoEquipo(equipo) ? 'transparent' : 'white'"
+                class="elevation-4 mb-4"
+              >
+                <v-img 
+                  v-if="getLogoEquipo(equipo)" 
+                  :src="getLogoEquipo(equipo)" 
+                  alt="Logo"
+                >
+                  <template v-slot:error>
+                    <v-icon :size="$vuetify.display.xs ? 40 : 64" color="primary">mdi-shield</v-icon>
+                  </template>
+                </v-img>
+                <v-icon v-else :size="$vuetify.display.xs ? 40 : 64" color="primary">mdi-shield</v-icon>
+              </v-avatar>
+              
+              <h1 :class="$vuetify.display.xs ? 'text-h5' : 'text-h3'" class="font-weight-bold text-white mb-3">
+                {{ equipo.nombre }}
+              </h1>
+              <v-row justify="center" dense>
+                <v-col cols="auto">
+                  <v-chip color="white" variant="flat">
+                    <v-icon start :size="$vuetify.display.xs ? 14 : 18" color="primary">mdi-trophy</v-icon>
+                    {{ equipo.division === 1 ? 'Primera' : 'Segunda' }} División
+                  </v-chip>
+                </v-col>
+                <v-col cols="auto">
+                  <v-chip color="white" variant="flat">
+                    <v-icon start :size="$vuetify.display.xs ? 14 : 18" color="primary">mdi-account-group</v-icon>
+                    {{ plantilla.length }} Jugadores
+                  </v-chip>
+                </v-col>
+                <v-col cols="auto">
+                  <v-chip color="white" variant="flat">
+                    <v-icon start :size="$vuetify.display.xs ? 14 : 18" color="primary">mdi-trophy</v-icon>
+                    {{ estadisticas.posicion }}º Clasificación
+                  </v-chip>
+                </v-col>
+              </v-row>
             </div>
           </v-card>
 
           <!-- Estadísticas -->
           <v-row class="mb-6">
-            <v-col cols="12" sm="6" md="3">
-              <v-card elevation="0" class="stat-card">
-                <v-card-text class="pa-4 text-center">
-                  <div class="stat-icon-container mb-3">
-                    <v-avatar color="primary" size="56">
-                      <v-icon color="white" size="28">mdi-scoreboard</v-icon>
-                    </v-avatar>
-                  </div>
-                  <div class="stat-value">{{ estadisticas.partidosJugados }}</div>
-                  <div class="stat-label">Partidos Jugados</div>
-                </v-card-text>
+            <v-col cols="6" sm="4" md="3" lg="2">
+              <v-card elevation="0" class="rounded-lg text-center pa-4">
+                <v-avatar :size="$vuetify.display.xs ? 40 : 56" color="primary" class="mb-3">
+                  <v-icon :size="$vuetify.display.xs ? 20 : 28" color="white">mdi-scoreboard</v-icon>
+                </v-avatar>
+                <div :class="$vuetify.display.xs ? 'text-h6' : 'text-h5'" class="font-weight-bold">
+                  {{ estadisticas.partidosJugados }}
+                </div>
+                <div class="text-caption text-grey-darken-1">Partidos</div>
+              </v-card>
+            </v-col>
+            
+            <v-col cols="6" sm="4" md="3" lg="2">
+              <v-card elevation="0" class="rounded-lg text-center pa-4">
+                <v-avatar :size="$vuetify.display.xs ? 40 : 56" color="success" class="mb-3">
+                  <v-icon :size="$vuetify.display.xs ? 20 : 28" color="white">mdi-check-circle</v-icon>
+                </v-avatar>
+                <div :class="$vuetify.display.xs ? 'text-h6' : 'text-h5'" class="font-weight-bold text-success">
+                  {{ estadisticas.ganados }}
+                </div>
+                <div class="text-caption text-grey-darken-1">Victorias</div>
               </v-card>
             </v-col>
 
-            <v-col cols="12" sm="6" md="3">
-              <v-card elevation="0" class="stat-card">
-                <v-card-text class="pa-4 text-center">
-                  <div class="stat-icon-container mb-3">
-                    <v-avatar color="success" size="56">
-                      <v-icon color="white" size="28">mdi-check-circle</v-icon>
-                    </v-avatar>
-                  </div>
-                  <div class="stat-value text-success">{{ estadisticas.ganados }}</div>
-                  <div class="stat-label">Victorias</div>
-                </v-card-text>
+            <v-col cols="6" sm="4" md="3" lg="2">
+              <v-card elevation="0" class="rounded-lg text-center pa-4">
+                <v-avatar :size="$vuetify.display.xs ? 40 : 56" color="warning" class="mb-3">
+                  <v-icon :size="$vuetify.display.xs ? 20 : 28" color="white">mdi-equal</v-icon>
+                </v-avatar>
+                <div :class="$vuetify.display.xs ? 'text-h6' : 'text-h5'" class="font-weight-bold text-warning">
+                  {{ estadisticas.empatados }}
+                </div>
+                <div class="text-caption text-grey-darken-1">Empates</div>
               </v-card>
             </v-col>
 
-            <v-col cols="12" sm="6" md="3">
-              <v-card elevation="0" class="stat-card">
-                <v-card-text class="pa-4 text-center">
-                  <div class="stat-icon-container mb-3">
-                    <v-avatar color="warning" size="56">
-                      <v-icon color="white" size="28">mdi-equal</v-icon>
-                    </v-avatar>
-                  </div>
-                  <div class="stat-value text-warning">{{ estadisticas.empatados }}</div>
-                  <div class="stat-label">Empates</div>
-                </v-card-text>
+            <v-col cols="6" sm="4" md="3" lg="2">
+              <v-card elevation="0" class="rounded-lg text-center pa-4">
+                <v-avatar :size="$vuetify.display.xs ? 40 : 56" color="error" class="mb-3">
+                  <v-icon :size="$vuetify.display.xs ? 20 : 28" color="white">mdi-close-circle</v-icon>
+                </v-avatar>
+                <div :class="$vuetify.display.xs ? 'text-h6' : 'text-h5'" class="font-weight-bold text-error">
+                  {{ estadisticas.perdidos }}
+                </div>
+                <div class="text-caption text-grey-darken-1">Derrotas</div>
               </v-card>
             </v-col>
 
-            <v-col cols="12" sm="6" md="3">
-              <v-card elevation="0" class="stat-card">
-                <v-card-text class="pa-4 text-center">
-                  <div class="stat-icon-container mb-3">
-                    <v-avatar color="error" size="56">
-                      <v-icon color="white" size="28">mdi-close-circle</v-icon>
-                    </v-avatar>
-                  </div>
-                  <div class="stat-value text-error">{{ estadisticas.perdidos }}</div>
-                  <div class="stat-label">Derrotas</div>
-                </v-card-text>
+            <v-col cols="6" sm="4" md="3" lg="2">
+              <v-card elevation="0" class="rounded-lg text-center pa-4">
+                <v-avatar :size="$vuetify.display.xs ? 40 : 56" color="accent" class="mb-3">
+                  <v-icon :size="$vuetify.display.xs ? 20 : 28" color="white">mdi-soccer</v-icon>
+                </v-avatar>
+                <div :class="$vuetify.display.xs ? 'text-h6' : 'text-h5'" class="font-weight-bold">
+                  {{ estadisticas.golesFavor }}
+                </div>
+                <div class="text-caption text-grey-darken-1">Goles Favor</div>
               </v-card>
             </v-col>
 
-            <v-col cols="12" sm="6" md="3">
-              <v-card elevation="0" class="stat-card">
-                <v-card-text class="pa-4 text-center">
-                  <div class="stat-icon-container mb-3">
-                    <v-avatar color="accent" size="56">
-                      <v-icon color="white" size="28">mdi-soccer</v-icon>
-                    </v-avatar>
-                  </div>
-                  <div class="stat-value">{{ estadisticas.golesFavor }}</div>
-                  <div class="stat-label">Goles a Favor</div>
-                </v-card-text>
-              </v-card>
-            </v-col>
-
-            <v-col cols="12" sm="6" md="3">
-              <v-card elevation="0" class="stat-card">
-                <v-card-text class="pa-4 text-center">
-                  <div class="stat-icon-container mb-3">
-                    <v-avatar color="grey-darken-1" size="56">
-                      <v-icon color="white" size="28">mdi-shield-alert</v-icon>
-                    </v-avatar>
-                  </div>
-                  <div class="stat-value">{{ estadisticas.golesContra }}</div>
-                  <div class="stat-label">Goles en Contra</div>
-                </v-card-text>
-              </v-card>
-            </v-col>
-
-            <v-col cols="12" sm="6" md="3">
-              <v-card elevation="0" class="stat-card">
-                <v-card-text class="pa-4 text-center">
-                  <div class="stat-icon-container mb-3">
-                    <v-avatar color="info" size="56">
-                      <v-icon color="white" size="28">mdi-chart-line</v-icon>
-                    </v-avatar>
-                  </div>
-                  <div class="stat-value" :class="estadisticas.diferencia >= 0 ? 'text-success' : 'text-error'">
-                    {{ estadisticas.diferencia > 0 ? '+' : '' }}{{ estadisticas.diferencia }}
-                  </div>
-                  <div class="stat-label">Diferencia</div>
-                </v-card-text>
-              </v-card>
-            </v-col>
-
-            <v-col cols="12" sm="6" md="3">
-              <v-card elevation="0" class="stat-card stat-card-puntos">
-                <v-card-text class="pa-4 text-center">
-                  <div class="stat-icon-container mb-3">
-                    <v-avatar color="primary" size="56">
-                      <v-icon color="white" size="28">mdi-star</v-icon>
-                    </v-avatar>
-                  </div>
-                  <div class="stat-value text-primary">{{ estadisticas.puntos }}</div>
-                  <div class="stat-label">Puntos</div>
-                </v-card-text>
+            <v-col cols="6" sm="4" md="3" lg="2">
+              <v-card elevation="0" class="rounded-lg text-center pa-4">
+                <v-avatar :size="$vuetify.display.xs ? 40 : 56" color="primary" class="mb-3">
+                  <v-icon :size="$vuetify.display.xs ? 20 : 28" color="white">mdi-star</v-icon>
+                </v-avatar>
+                <div :class="$vuetify.display.xs ? 'text-h6' : 'text-h5'" class="font-weight-bold text-primary">
+                  {{ estadisticas.puntos }}
+                </div>
+                <div class="text-caption text-grey-darken-1">Puntos</div>
               </v-card>
             </v-col>
           </v-row>
 
           <v-row>
             <!-- Plantilla -->
-            <v-col cols="12" lg="8">
-              <v-card elevation="0" class="plantilla-card mb-6">
-                <v-card-title class="card-title">
-                  <v-icon color="primary" class="mr-2">mdi-account-group</v-icon>
-                  Plantilla
+            <v-col cols="12" :lg="proximoPartido ? 8 : 12">
+              <v-card elevation="0" class="rounded-lg mb-6">
+                <v-card-title class="bg-grey-lighten-5 py-4">
+                  <v-icon color="primary" :size="$vuetify.display.xs ? 20 : 24" class="mr-2">mdi-account-group</v-icon>
+                  <span :class="$vuetify.display.xs ? 'text-body-1' : 'text-h6'" class="font-weight-bold">Plantilla</span>
                 </v-card-title>
 
                 <v-divider></v-divider>
 
-                <v-table class="plantilla-table">
+                <v-table :density="$vuetify.display.xs ? 'compact' : 'default'">
                   <thead>
                     <tr>
                       <th class="text-center">Dorsal</th>
@@ -185,18 +165,20 @@
                   <tbody>
                     <tr v-for="jugador in plantilla" :key="jugador.id">
                       <td class="text-center">
-                        <v-avatar color="primary" size="32">
-                          <span class="text-white font-weight-bold text-body-2">{{ jugador.dorsal }}</span>
+                        <v-avatar :size="$vuetify.display.xs ? 28 : 32" color="primary">
+                          <span :class="[$vuetify.display.xs ? 'text-caption' : 'text-body-2', 'text-white', 'font-weight-bold']">
+                            {{ jugador.dorsal }}
+                          </span>
                         </v-avatar>
                       </td>
                       <td>
-                        <div class="jugador-info">
-                          <div class="text-body-2 font-weight-bold">{{ jugador.nombre }} {{ jugador.apellidos }}</div>
-                        </div>
+                        <span :class="[$vuetify.display.xs ? 'text-caption' : 'text-body-2', 'font-weight-bold']">
+                          {{ jugador.nombre }} {{ jugador.apellidos }}
+                        </span>
                       </td>
                       <td class="text-center">
-                        <v-chip size="small" :color="jugador.goles > 0 ? 'success' : 'grey-lighten-3'">
-                          <v-icon start size="16">mdi-soccer</v-icon>
+                        <v-chip :size="$vuetify.display.xs ? 'x-small' : 'small'" :color="jugador.goles > 0 ? 'success' : 'grey-lighten-3'">
+                          <v-icon start :size="$vuetify.display.xs ? 12 : 16">mdi-soccer</v-icon>
                           {{ jugador.goles || 0 }}
                         </v-chip>
                       </td>
@@ -206,55 +188,111 @@
               </v-card>
 
               <!-- Últimos Partidos -->
-              <v-card elevation="0" class="ultimos-partidos-card">
-                <v-card-title class="card-title">
-                  <v-icon color="primary" class="mr-2">mdi-history</v-icon>
-                  Últimos Partidos
+              <v-card elevation="0" class="rounded-lg">
+                <v-card-title class="bg-grey-lighten-5 py-4">
+                  <v-icon color="primary" :size="$vuetify.display.xs ? 20 : 24" class="mr-2">mdi-history</v-icon>
+                  <span :class="$vuetify.display.xs ? 'text-body-1' : 'text-h6'" class="font-weight-bold">Últimos Partidos</span>
                 </v-card-title>
 
                 <v-divider></v-divider>
 
-                <v-card-text class="pa-4">
+                <v-card-text :class="$vuetify.display.xs ? 'pa-2' : 'pa-4'">
                   <v-card
                     v-for="partido in ultimosPartidos"
                     :key="partido.id"
                     variant="outlined"
-                    class="partido-item mb-3"
+                    class="rounded-lg mb-3"
                   >
-                    <v-card-text class="pa-4">
-                      <div class="d-flex justify-space-between align-center mb-3">
-                        <v-chip size="small" variant="flat" color="grey-lighten-4">
-                          Jornada {{ partido.jornada }}
-                        </v-chip>
-                        <span class="text-caption text-grey-darken-1">
-                          {{ formatearFecha(partido.fecha) }}
-                        </span>
-                        <v-chip 
-                          size="small" 
-                          :color="getResultadoColor(partido)"
-                          variant="flat"
-                        >
-                          {{ getResultadoTexto(partido) }}
-                        </v-chip>
-                      </div>
+                    <v-card-text :class="$vuetify.display.xs ? 'pa-3' : 'pa-4'">
+                      <v-row class="mb-3" justify="space-between" align="center" dense>
+                        <v-col cols="auto">
+                          <v-chip :size="$vuetify.display.xs ? 'x-small' : 'small'" variant="flat" color="grey-lighten-4">
+                            Jornada {{ partido.jornada }}
+                          </v-chip>
+                        </v-col>
+                        <v-col cols="auto">
+                          <span :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'" class="text-grey-darken-1">
+                            {{ formatearFecha(partido.fecha) }}
+                          </span>
+                        </v-col>
+                        <v-col cols="auto">
+                          <v-chip 
+                            :size="$vuetify.display.xs ? 'x-small' : 'small'" 
+                            :color="getResultadoColor(partido)"
+                            variant="flat"
+                          >
+                            {{ getResultadoTexto(partido) }}
+                          </v-chip>
+                        </v-col>
+                      </v-row>
 
-                      <div class="resultado-mini">
-                        <div class="equipo-mini">
-                          {{ getNombreEquipo(partido.equipoLocalId) }}
-                        </div>
-                        <div class="marcador-mini">
-                          <span :class="getGolesLocal(partido) > getGolesVisitante(partido) ? 'ganador' : ''">
+                      <v-row align="center" dense>
+                        <v-col cols="4">
+                          <v-row align="center" dense no-gutters>
+                            <v-col cols="auto">
+                              <v-avatar 
+                                :size="$vuetify.display.xs ? 20 : 24"
+                                :color="getLogoEquipo(partido.equipoLocalId) ? 'transparent' : 'grey-darken-1'"
+                                class="mr-2"
+                              >
+                                <v-img 
+                                  v-if="getLogoEquipo(partido.equipoLocalId)" 
+                                  :src="getLogoEquipo(partido.equipoLocalId)" 
+                                  alt="Logo"
+                                >
+                                  <template v-slot:error>
+                                    <v-icon :size="$vuetify.display.xs ? 10 : 12" color="white">mdi-shield</v-icon>
+                                  </template>
+                                </v-img>
+                                <v-icon v-else :size="$vuetify.display.xs ? 10 : 12" color="white">mdi-shield</v-icon>
+                              </v-avatar>
+                            </v-col>
+                            <v-col>
+                              <span :class="[$vuetify.display.xs ? 'text-caption' : 'text-body-2', 'font-weight-medium']">
+                                {{ getNombreEquipo(partido.equipoLocalId) }}
+                              </span>
+                            </v-col>
+                          </v-row>
+                        </v-col>
+                        
+                        <v-col cols="4" class="text-center">
+                          <span :class="[$vuetify.display.xs ? 'text-h6' : 'text-h5', 'font-weight-bold', getGolesLocal(partido) > getGolesVisitante(partido) ? 'text-primary' : 'text-grey-lighten-1']">
                             {{ getGolesLocal(partido) }}
                           </span>
-                          <span class="separador">-</span>
-                          <span :class="getGolesVisitante(partido) > getGolesLocal(partido) ? 'ganador' : ''">
+                          <span class="mx-1">-</span>
+                          <span :class="[$vuetify.display.xs ? 'text-h6' : 'text-h5', 'font-weight-bold', getGolesVisitante(partido) > getGolesLocal(partido) ? 'text-primary' : 'text-grey-lighten-1']">
                             {{ getGolesVisitante(partido) }}
                           </span>
-                        </div>
-                        <div class="equipo-mini text-right">
-                          {{ getNombreEquipo(partido.equipoVisitanteId) }}
-                        </div>
-                      </div>
+                        </v-col>
+                        
+                        <v-col cols="4" class="text-right">
+                          <v-row align="center" dense no-gutters justify="end">
+                            <v-col>
+                              <span :class="[$vuetify.display.xs ? 'text-caption' : 'text-body-2', 'font-weight-medium']">
+                                {{ getNombreEquipo(partido.equipoVisitanteId) }}
+                              </span>
+                            </v-col>
+                            <v-col cols="auto">
+                              <v-avatar 
+                                :size="$vuetify.display.xs ? 20 : 24"
+                                :color="getLogoEquipo(partido.equipoVisitanteId) ? 'transparent' : 'grey-darken-1'"
+                                class="ml-2"
+                              >
+                                <v-img 
+                                  v-if="getLogoEquipo(partido.equipoVisitanteId)" 
+                                  :src="getLogoEquipo(partido.equipoVisitanteId)" 
+                                  alt="Logo"
+                                >
+                                  <template v-slot:error>
+                                    <v-icon :size="$vuetify.display.xs ? 10 : 12" color="white">mdi-shield</v-icon>
+                                  </template>
+                                </v-img>
+                                <v-icon v-else :size="$vuetify.display.xs ? 10 : 12" color="white">mdi-shield</v-icon>
+                              </v-avatar>
+                            </v-col>
+                          </v-row>
+                        </v-col>
+                      </v-row>
                     </v-card-text>
                   </v-card>
                 </v-card-text>
@@ -262,55 +300,22 @@
             </v-col>
 
             <!-- Sidebar -->
-            <v-col cols="12" lg="4">
-              <!-- Top Goleadores del Equipo -->
-              <v-card elevation="0" class="top-goleadores-card mb-6">
-                <v-card-title class="card-title">
-                  <v-icon color="primary" class="mr-2">mdi-soccer</v-icon>
-                  Goleadores del Equipo
-                </v-card-title>
-
-                <v-divider></v-divider>
-
-                <v-list class="pa-0">
-                  <v-list-item
-                    v-for="(jugador, index) in topGoleadores"
-                    :key="jugador.id"
-                    class="goleador-mini-item"
-                  >
-                    <template v-slot:prepend>
-                      <div class="posicion-mini">{{ index + 1 }}</div>
-                    </template>
-
-                    <v-list-item-title class="text-body-2 font-weight-medium">
-                      {{ jugador.nombre }} {{ jugador.apellidos }}
-                    </v-list-item-title>
-
-                    <template v-slot:append>
-                      <v-chip size="small" color="success">
-                        <v-icon start size="16">mdi-soccer</v-icon>
-                        {{ jugador.goles }}
-                      </v-chip>
-                    </template>
-                  </v-list-item>
-                </v-list>
-              </v-card>
-
+            <v-col v-if="proximoPartido" cols="12" lg="4">
               <!-- Próximo Partido -->
-              <v-card v-if="proximoPartido" elevation="0" class="proximo-partido-card">
-                <v-card-title class="card-title">
-                  <v-icon color="primary" class="mr-2">mdi-calendar-clock</v-icon>
-                  Próximo Partido
+              <v-card elevation="0" class="rounded-lg">
+                <v-card-title class="bg-grey-lighten-5 py-4">
+                  <v-icon color="primary" :size="$vuetify.display.xs ? 20 : 24" class="mr-2">mdi-calendar-clock</v-icon>
+                  <span :class="$vuetify.display.xs ? 'text-body-1' : 'text-h6'" class="font-weight-bold">Próximo Partido</span>
                 </v-card-title>
 
                 <v-divider></v-divider>
 
-                <v-card-text class="pa-4">
+                <v-card-text :class="$vuetify.display.xs ? 'pa-3' : 'pa-4'">
                   <div class="text-center mb-3">
                     <v-chip color="warning" variant="flat" class="mb-2">
                       Jornada {{ proximoPartido.jornada }}
                     </v-chip>
-                    <div class="text-body-2 font-weight-bold text-grey-darken-4">
+                    <div :class="[$vuetify.display.xs ? 'text-body-2' : 'text-body-1', 'font-weight-bold']">
                       {{ formatearFechaCompleta(proximoPartido.fecha) }}
                     </div>
                     <div v-if="proximoPartido.estadio" class="text-caption text-grey-darken-1 mt-1">
@@ -319,21 +324,51 @@
                     </div>
                   </div>
 
-                  <div class="vs-container">
-                    <div class="equipo-vs">
-                      <v-icon size="20" color="grey-darken-1">mdi-shield</v-icon>
-                      <div class="text-body-2 font-weight-medium">
+                  <v-row align="center" class="mt-4">
+                    <v-col cols="5" class="text-center">
+                      <v-avatar 
+                        size="40"
+                        :color="getLogoEquipo(proximoPartido.equipoLocalId) ? 'transparent' : 'grey-darken-1'"
+                      >
+                        <v-img 
+                          v-if="getLogoEquipo(proximoPartido.equipoLocalId)" 
+                          :src="getLogoEquipo(proximoPartido.equipoLocalId)" 
+                          alt="Logo"
+                        >
+                          <template v-slot:error>
+                            <v-icon size="20" color="white">mdi-shield</v-icon>
+                          </template>
+                        </v-img>
+                        <v-icon v-else size="20" color="white">mdi-shield</v-icon>
+                      </v-avatar>
+                      <div :class="[$vuetify.display.xs ? 'text-caption' : 'text-body-2', 'font-weight-medium', 'mt-1']">
                         {{ getNombreEquipo(proximoPartido.equipoLocalId) }}
                       </div>
-                    </div>
-                    <div class="vs-badge">VS</div>
-                    <div class="equipo-vs">
-                      <v-icon size="20" color="grey-darken-1">mdi-shield</v-icon>
-                      <div class="text-body-2 font-weight-medium">
+                    </v-col>
+                    <v-col cols="2" class="text-center">
+                      <div :class="[$vuetify.display.xs ? 'text-h6' : 'text-h5', 'font-weight-bold', 'text-grey-darken-1']">VS</div>
+                    </v-col>
+                    <v-col cols="5" class="text-center">
+                      <v-avatar 
+                        size="40"
+                        :color="getLogoEquipo(proximoPartido.equipoVisitanteId) ? 'transparent' : 'grey-darken-1'"
+                      >
+                        <v-img 
+                          v-if="getLogoEquipo(proximoPartido.equipoVisitanteId)" 
+                          :src="getLogoEquipo(proximoPartido.equipoVisitanteId)" 
+                          alt="Logo"
+                        >
+                          <template v-slot:error>
+                            <v-icon size="20" color="white">mdi-shield</v-icon>
+                          </template>
+                        </v-img>
+                        <v-icon v-else size="20" color="white">mdi-shield</v-icon>
+                      </v-avatar>
+                      <div :class="[$vuetify.display.xs ? 'text-caption' : 'text-body-2', 'font-weight-medium', 'mt-1']">
                         {{ getNombreEquipo(proximoPartido.equipoVisitanteId) }}
                       </div>
-                    </div>
-                  </div>
+                    </v-col>
+                  </v-row>
                 </v-card-text>
               </v-card>
             </v-col>
@@ -341,10 +376,12 @@
         </div>
 
         <!-- Equipo no encontrado -->
-        <v-card v-else elevation="0" class="empty-card">
+        <v-card v-else elevation="0" class="rounded-lg">
           <v-card-text class="text-center py-12">
-            <v-icon size="64" color="grey-lighten-2">mdi-shield-alert</v-icon>
-            <p class="text-h6 text-grey-darken-1 mt-4 mb-0">Equipo no encontrado</p>
+            <v-icon :size="$vuetify.display.xs ? 48 : 64" color="grey-lighten-2">mdi-shield-alert</v-icon>
+            <p :class="$vuetify.display.xs ? 'text-body-2' : 'text-h6'" class="text-grey-darken-1 mt-4 mb-0">
+              Equipo no encontrado
+            </p>
           </v-card-text>
         </v-card>
       </v-container>
@@ -373,13 +410,6 @@ const plantilla = computed(() => {
   return jugadores.value
     .filter(j => j.equipoId === equipo.value?.id)
     .sort((a, b) => a.dorsal - b.dorsal);
-});
-
-const topGoleadores = computed(() => {
-  return plantilla.value
-    .filter(j => j.goles > 0)
-    .sort((a, b) => b.goles - a.goles)
-    .slice(0, 5);
 });
 
 const partidosDelEquipo = computed(() => {
@@ -431,7 +461,6 @@ const estadisticas = computed(() => {
 
   const puntos = (ganados * 3) + empatados;
   
-  // Calcular posición en la división
   const equiposMismaDivision = equipos.value.filter(e => e.division === equipo.value.division);
   const clasificacion = equiposMismaDivision.map(e => {
     const pLocal = partidos.value.filter(p => p.equipoLocalId === e.id && p.finalizado);
@@ -482,6 +511,15 @@ const getGolesVisitante = (partido) => {
 const getNombreEquipo = (equipoId) => {
   const eq = equipos.value.find(e => e.id === equipoId);
   return eq ? eq.nombre : 'Desconocido';
+};
+
+// NUEVO: Obtener logo del equipo
+const getLogoEquipo = (equipoIdOrEquipo) => {
+  if (typeof equipoIdOrEquipo === 'string') {
+    const eq = equipos.value.find(e => e.id === equipoIdOrEquipo);
+    return eq?.logoUrl || null;
+  }
+  return equipoIdOrEquipo?.logoUrl || null;
 };
 
 const getResultadoColor = (partido) => {
@@ -554,163 +592,12 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Mismo CSS que antes, sin cambios */
-.main-content {
-  background: #F8FAFC;
-}
-
-.equipo-header-card {
-  border: 1px solid #E2E8F0;
+.rounded-lg {
   border-radius: 12px !important;
-  overflow: hidden;
+  border: 1px solid rgb(var(--v-theme-grey-lighten-3));
 }
 
-.equipo-header-banner {
-  background: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
-}
-
-.stat-card {
-  border: 1px solid #E2E8F0;
-  border-radius: 12px !important;
-  transition: all 0.2s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.12);
-}
-
-.stat-card-puntos {
-  border: 2px solid #2563EB;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 800;
-  line-height: 1;
-  margin-bottom: 8px;
-}
-
-.stat-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #64748B;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.plantilla-card,
-.ultimos-partidos-card,
-.top-goleadores-card,
-.proximo-partido-card,
-.empty-card {
-  border: 1px solid #E2E8F0;
-  border-radius: 12px !important;
-  background: white;
-}
-
-.card-title {
-  padding: 20px !important;
-  background: #F8FAFC;
-  border-bottom: 1px solid #E2E8F0;
-}
-
-.plantilla-table thead {
-  background: #F8FAFC;
-}
-
-.plantilla-table thead th {
-  font-weight: 700 !important;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  color: #64748B !important;
-  padding: 16px !important;
-}
-
-.plantilla-table tbody td {
-  padding: 16px !important;
-}
-
-.plantilla-table tbody tr:hover {
-  background: #F8FAFC;
-}
-
-.partido-item {
-  border-radius: 8px !important;
-}
-
-.resultado-mini {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 16px;
-}
-
-.equipo-mini {
-  font-weight: 600;
-  color: #334155;
-}
-
-.marcador-mini {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #94A3B8;
-}
-
-.marcador-mini .ganador {
-  color: #2563EB;
-}
-
-.marcador-mini .separador {
-  font-size: 1rem;
-  color: #CBD5E1;
-}
-
-.posicion-mini {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: #F1F5F9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: #64748B;
-  margin-right: 12px;
-}
-
-.goleador-mini-item {
-  border-bottom: 1px solid #F1F5F9;
-  padding: 12px 16px !important;
-}
-
-.goleador-mini-item:hover {
-  background: #F8FAFC;
-}
-
-.vs-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.equipo-vs {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px;
-  background: #F8FAFC;
-  border-radius: 8px;
-}
-
-.vs-badge {
-  text-align: center;
-  font-weight: 800;
-  font-size: 1.25rem;
-  color: #64748B;
-  padding: 8px;
+.equipo-banner {
+  background: linear-gradient(135deg, rgb(var(--v-theme-primary)) 0%, rgb(var(--v-theme-primary-darken-1)) 100%);
 }
 </style>

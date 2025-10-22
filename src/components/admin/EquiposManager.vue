@@ -42,9 +42,16 @@
       >
         <v-card elevation="0" class="equipo-card">
           <v-card-text class="text-center pa-5">
-            <v-avatar color="primary" size="64" class="mb-3">
-              <v-icon color="white" size="36">mdi-shield</v-icon>
+            <!-- Logo del equipo -->
+            <v-avatar :color="equipo.logoUrl ? 'transparent' : 'primary'" size="64" class="mb-3">
+              <v-img v-if="equipo.logoUrl" :src="equipo.logoUrl" alt="Logo del equipo">
+                <template v-slot:error>
+                  <v-icon color="white" size="36">mdi-shield</v-icon>
+                </template>
+              </v-img>
+              <v-icon v-else color="white" size="36">mdi-shield</v-icon>
             </v-avatar>
+
             <h3 class="text-h6 font-weight-bold text-grey-darken-4 mb-2">
               {{ equipo.nombre }}
             </h3>
@@ -104,7 +111,44 @@
             prepend-inner-icon="mdi-trophy"
             :error-messages="errors.division"
             required
+            class="mb-4"
           ></v-select>
+
+          <!-- NUEVO: Campo de URL del logo -->
+          <v-text-field
+            v-model="form.logoUrl"
+            label="URL del Logo (opcional)"
+            placeholder="https://ejemplo.com/logo.png"
+            variant="outlined"
+            color="primary"
+            prepend-inner-icon="mdi-image"
+            :error-messages="errors.logoUrl"
+            hint="Ingresa la URL pública del logo del equipo"
+            persistent-hint
+            class="mb-4"
+          ></v-text-field>
+
+          <!-- Preview del logo -->
+          <div v-if="form.logoUrl" class="text-center mt-4">
+            <v-card variant="outlined" class="pa-4 d-inline-block">
+              <p class="text-caption text-grey-darken-1 mb-2">Vista previa del logo:</p>
+              <v-avatar size="80" :color="logoError ? 'grey-lighten-4' : 'transparent'">
+                <v-img 
+                  :src="form.logoUrl" 
+                  alt="Logo del equipo"
+                  @error="logoError = true"
+                  @load="logoError = false"
+                >
+                  <template v-slot:error>
+                    <v-icon size="40" color="grey">mdi-image-broken</v-icon>
+                  </template>
+                </v-img>
+              </v-avatar>
+              <p v-if="logoError" class="text-caption text-error mt-2 mb-0">
+                Error al cargar la imagen
+              </p>
+            </v-card>
+          </div>
         </v-card-text>
         
         <v-divider></v-divider>
@@ -134,9 +178,11 @@ const dialog = ref(false);
 const modoEdicion = ref(false);
 const guardando = ref(false);
 const filtroDiv = ref('todas');
+const logoError = ref(false); // NUEVO
 const form = ref({
   nombre: '',
-  division: 1
+  division: 1,
+  logoUrl: '' // NUEVO
 });
 const errors = ref({});
 
@@ -146,22 +192,28 @@ const equiposFiltrados = computed(() => {
 });
 
 const abrirDialogNuevo = () => {
-  form.value = { nombre: '', division: 1 };
+  form.value = { nombre: '', division: 1, logoUrl: '' }; // ACTUALIZADO
   modoEdicion.value = false;
+  logoError.value = false; // NUEVO
   errors.value = {};
   dialog.value = true;
 };
 
 const editarEquipo = (equipo) => {
-  form.value = { ...equipo };
+  form.value = { 
+    ...equipo,
+    logoUrl: equipo.logoUrl || '' // ACTUALIZADO
+  };
   modoEdicion.value = true;
+  logoError.value = false; // NUEVO
   errors.value = {};
   dialog.value = true;
 };
 
 const cerrarDialog = () => {
   dialog.value = false;
-  form.value = { nombre: '', division: 1 };
+  form.value = { nombre: '', division: 1, logoUrl: '' }; // ACTUALIZADO
+  logoError.value = false; // NUEVO
   errors.value = {};
 };
 
@@ -185,7 +237,8 @@ const guardar = async () => {
   try {
     const data = { 
       nombre: form.value.nombre,
-      division: Number(form.value.division)
+      division: Number(form.value.division),
+      logoUrl: form.value.logoUrl || null // NUEVO: Guarda null si está vacío
     };
     
     if (modoEdicion.value) {

@@ -129,22 +129,11 @@
                 required
               ></v-text-field>
             </v-col>
-            <v-col cols="12" md="6">
-              <v-text-field
-                v-model.number="form.goles"
-                label="Goles"
-                type="number"
-                variant="outlined"
-                color="primary"
-                prepend-inner-icon="mdi-soccer"
-                min="0"
-              ></v-text-field>
-            </v-col>
             <v-col cols="12">
               <v-select
                 v-model="form.equipoId"
                 :items="equipos"
-                item-title="nombreCompleto"
+                item-title="nombre"
                 item-value="id"
                 label="Equipo"
                 variant="outlined"
@@ -267,7 +256,6 @@ const guardar = async () => {
       apellidos: form.value.apellidos,
       dorsal: form.value.dorsal,
       equipoId: form.value.equipoId,
-      goles: form.value.goles || 0
       // NO incluir division - se hereda del equipo
     };
     

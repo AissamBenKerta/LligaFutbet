@@ -1,268 +1,182 @@
 <template>
   <v-app>
-    <!-- Header Admin -->
-    <v-app-bar color="primary" elevation="0" height="64">
-      <v-container class="d-flex align-center">
-        <div class="d-flex align-center">
-          <v-avatar color="white" size="36" class="mr-3">
-            <v-img src="https://www.escoladefutboldesabadell.com/wp-content/uploads/2023/01/Logo_escola_80x80.png" alt="Logo" cover></v-img>
-          </v-avatar>
-          <div>
-            <div class="text-body-1 font-weight-bold text-white">Panel de Administración</div>
-            <div class="text-caption text-blue-lighten-4">Lliga Futbet</div>
-          </div>
+    <AdminLayout>
+      <v-container :fluid="$vuetify.display.xs" class="py-6">
+        <!-- Header -->
+        <div class="mb-6">
+          <h1 :class="$vuetify.display.xs ? 'text-h5' : 'text-h4'" class="font-weight-bold mb-2">
+            Dashboard
+          </h1>
+          <p :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'" class="text-grey-darken-1">
+            Resumen general de la liga
+          </p>
         </div>
-        <v-spacer></v-spacer>
-        
-        <!-- User menu -->
-        <v-menu>
-          <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" variant="text" color="white">
-              <v-icon start>mdi-account-circle</v-icon>
-              {{ user?.email || 'Admin' }}
-              <v-icon end>mdi-chevron-down</v-icon>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item @click="handleLogout">
-              <template v-slot:prepend>
-                <v-icon>mdi-logout</v-icon>
-              </template>
-              <v-list-item-title>Cerrar Sesión</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+
+        <!-- Estadísticas Generales -->
+        <v-row class="mb-6">
+          <v-col cols="6" sm="6" md="3">
+            <v-card elevation="0" class="rounded-lg pa-4 text-center">
+              <v-avatar :size="$vuetify.display.xs ? 40 : 56" color="primary" class="mb-3">
+                <v-icon :size="$vuetify.display.xs ? 20 : 28" color="white">mdi-shield-star</v-icon>
+              </v-avatar>
+              <div :class="$vuetify.display.xs ? 'text-h5' : 'text-h4'" class="font-weight-bold text-primary">
+                {{ totalEquipos }}
+              </div>
+              <div :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'" class="text-grey-darken-1">
+                Equipos
+              </div>
+            </v-card>
+          </v-col>
+
+          <v-col cols="6" sm="6" md="3">
+            <v-card elevation="0" class="rounded-lg pa-4 text-center">
+              <v-avatar :size="$vuetify.display.xs ? 40 : 56" color="success" class="mb-3">
+                <v-icon :size="$vuetify.display.xs ? 20 : 28" color="white">mdi-account-group</v-icon>
+              </v-avatar>
+              <div :class="$vuetify.display.xs ? 'text-h5' : 'text-h4'" class="font-weight-bold text-success">
+                {{ totalJugadores }}
+              </div>
+              <div :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'" class="text-grey-darken-1">
+                Jugadores
+              </div>
+            </v-card>
+          </v-col>
+
+          <v-col cols="6" sm="6" md="3">
+            <v-card elevation="0" class="rounded-lg pa-4 text-center">
+              <v-avatar :size="$vuetify.display.xs ? 40 : 56" color="warning" class="mb-3">
+                <v-icon :size="$vuetify.display.xs ? 20 : 28" color="white">mdi-soccer</v-icon>
+              </v-avatar>
+              <div :class="$vuetify.display.xs ? 'text-h5' : 'text-h4'" class="font-weight-bold text-warning">
+                {{ totalPartidos }}
+              </div>
+              <div :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'" class="text-grey-darken-1">
+                Partidos
+              </div>
+            </v-card>
+          </v-col>
+
+          <v-col cols="6" sm="6" md="3">
+            <v-card elevation="0" class="rounded-lg pa-4 text-center">
+              <v-avatar :size="$vuetify.display.xs ? 40 : 56" color="error" class="mb-3">
+                <v-icon :size="$vuetify.display.xs ? 20 : 28" color="white">mdi-clock-alert</v-icon>
+              </v-avatar>
+              <div :class="$vuetify.display.xs ? 'text-h5' : 'text-h4'" class="font-weight-bold text-error">
+                {{ partidosPendientes }}
+              </div>
+              <div :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'" class="text-grey-darken-1">
+                Pendientes
+              </div>
+            </v-card>
+          </v-col>
+        </v-row>
+
+        <!-- Accesos Rápidos -->
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-card elevation="0" class="rounded-lg">
+              <v-card-title class="bg-grey-lighten-5 py-4">
+                <v-icon color="primary" :size="$vuetify.display.xs ? 20 : 24" class="mr-2">mdi-lightning-bolt</v-icon>
+                <span :class="$vuetify.display.xs ? 'text-body-1' : 'text-h6'" class="font-weight-bold">
+                  Accesos Rápidos
+                </span>
+              </v-card-title>
+
+              <v-divider></v-divider>
+
+              <v-card-text :class="$vuetify.display.xs ? 'pa-2' : 'pa-4'">
+                <v-list density="compact">
+                  <v-list-item
+                    prepend-icon="mdi-shield-plus"
+                    title="Añadir Equipo"
+                    to="/admin/equipos"
+                    rounded="lg"
+                  ></v-list-item>
+                  
+                  <v-list-item
+                    prepend-icon="mdi-account-plus"
+                    title="Añadir Jugador"
+                    to="/admin/jugadores"
+                    rounded="lg"
+                  ></v-list-item>
+                  
+                  <v-list-item
+                    prepend-icon="mdi-calendar-plus"
+                    title="Crear Partido"
+                    to="/admin/partidos"
+                    rounded="lg"
+                  ></v-list-item>
+                </v-list>
+              </v-card-text>
+            </v-card>
+          </v-col>
+
+          <v-col cols="12" md="6">
+            <v-card elevation="0" class="rounded-lg">
+              <v-card-title class="bg-grey-lighten-5 py-4">
+                <v-icon color="primary" :size="$vuetify.display.xs ? 20 : 24" class="mr-2">mdi-trophy</v-icon>
+                <span :class="$vuetify.display.xs ? 'text-body-1' : 'text-h6'" class="font-weight-bold">
+                  Máximos Goleadores
+                </span>
+              </v-card-title>
+
+              <v-divider></v-divider>
+
+              <v-list density="compact">
+                <v-list-item
+                  v-for="(jugador, index) in topGoleadores"
+                  :key="jugador.id"
+                >
+                  <template v-slot:prepend>
+                    <v-avatar :size="$vuetify.display.xs ? 28 : 32" :color="index < 3 ? 'primary' : 'grey-lighten-4'">
+                      <span :class="[$vuetify.display.xs ? 'text-caption' : 'text-body-2', 'font-weight-bold', index < 3 ? 'text-white' : 'text-grey-darken-1']">
+                        {{ index + 1 }}
+                      </span>
+                    </v-avatar>
+                  </template>
+
+                  <v-list-item-title :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'">
+                    {{ jugador.nombre }} {{ jugador.apellidos }}
+                  </v-list-item-title>
+
+                  <template v-slot:append>
+                    <v-chip :size="$vuetify.display.xs ? 'x-small' : 'small'" color="success">
+                      <v-icon start :size="$vuetify.display.xs ? 12 : 16">mdi-soccer</v-icon>
+                      {{ jugador.goles }}
+                    </v-chip>
+                  </template>
+                </v-list-item>
+              </v-list>
+            </v-card>
+          </v-col>
+        </v-row>
       </v-container>
-    </v-app-bar>
-
-    <!-- Main Content -->
-    <v-main class="admin-main">
-      <v-container fluid class="pa-6">
-        <!-- Dashboard -->
-        <div v-if="activeSection === 'dashboard'">
-          <!-- Header -->
-          <div class="page-header mb-6">
-            <h1 class="text-h4 font-weight-bold text-grey-darken-4 mb-2">Dashboard</h1>
-            <p class="text-body-2 text-grey-darken-1">Resumen general de la liga</p>
-          </div>
-
-          <!-- Stats Cards -->
-          <v-row class="mb-6">
-            <v-col cols="12" sm="6" md="3">
-              <v-card elevation="0" class="stat-card">
-                <v-card-text class="pa-5">
-                  <div class="d-flex justify-space-between align-center mb-3">
-                    <div class="stat-icon primary">
-                      <v-icon color="primary" size="24">mdi-shield</v-icon>
-                    </div>
-                    <v-chip size="small" color="success" variant="flat">Activos</v-chip>
-                  </div>
-                  <div class="stat-valor">{{ totalEquipos }}</div>
-                  <div class="stat-label">Equipos</div>
-                </v-card-text>
-              </v-card>
-            </v-col>
-
-            <v-col cols="12" sm="6" md="3">
-              <v-card elevation="0" class="stat-card">
-                <v-card-text class="pa-5">
-                  <div class="d-flex justify-space-between align-center mb-3">
-                    <div class="stat-icon success">
-                      <v-icon color="success" size="24">mdi-account-group</v-icon>
-                    </div>
-                    <v-chip size="small" color="success" variant="flat">Total</v-chip>
-                  </div>
-                  <div class="stat-valor">{{ totalJugadores }}</div>
-                  <div class="stat-label">Jugadores</div>
-                </v-card-text>
-              </v-card>
-            </v-col>
-
-            <v-col cols="12" sm="6" md="3">
-              <v-card elevation="0" class="stat-card">
-                <v-card-text class="pa-5">
-                  <div class="d-flex justify-space-between align-center mb-3">
-                    <div class="stat-icon accent">
-                      <v-icon color="accent" size="24">mdi-scoreboard</v-icon>
-                    </div>
-                    <v-chip size="small" color="info" variant="flat">En curso</v-chip>
-                  </div>
-                  <div class="stat-valor">{{ totalPartidos }}</div>
-                  <div class="stat-label">Partidos</div>
-                </v-card-text>
-              </v-card>
-            </v-col>
-
-            <v-col cols="12" sm="6" md="3">
-              <v-card elevation="0" class="stat-card">
-                <v-card-text class="pa-5">
-                  <div class="d-flex justify-space-between align-center mb-3">
-                    <div class="stat-icon warning">
-                      <v-icon color="warning" size="24">mdi-soccer</v-icon>
-                    </div>
-                    <v-chip size="small" color="warning" variant="flat">Total</v-chip>
-                  </div>
-                  <div class="stat-valor">{{ totalGoles }}</div>
-                  <div class="stat-label">Goles</div>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-
-          <!-- Quick Actions -->
-          <v-row>
-            <v-col cols="12">
-              <v-card elevation="0" class="action-card">
-                <v-card-title class="card-title">
-                  <v-icon color="primary" class="mr-2">mdi-lightning-bolt</v-icon>
-                  Acciones Rápidas
-                </v-card-title>
-                <v-divider></v-divider>
-                <v-card-text class="pa-5">
-                  <v-row>
-                    <v-col cols="12" sm="4">
-                      <v-btn
-                        variant="outlined"
-                        color="primary"
-                        block
-                        size="large"
-                        prepend-icon="mdi-plus-circle"
-                        @click="activeSection = 'equipos'"
-                      >
-                        Gestionar Equipos
-                      </v-btn>
-                    </v-col>
-                    <v-col cols="12" sm="4">
-                      <v-btn
-                        variant="outlined"
-                        color="primary"
-                        block
-                        size="large"
-                        prepend-icon="mdi-account-plus"
-                        @click="activeSection = 'jugadores'"
-                      >
-                        Gestionar Jugadores
-                      </v-btn>
-                    </v-col>
-                    <v-col cols="12" sm="4">
-                      <v-btn
-                        variant="outlined"
-                        color="primary"
-                        block
-                        size="large"
-                        prepend-icon="mdi-calendar-plus"
-                        @click="activeSection = 'partidos'"
-                      >
-                        Gestionar Partidos
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-        </div>
-
-        <!-- Gestión con Tabs -->
-        <div v-else>
-          <v-card elevation="0" class="admin-card">
-            <Tabs :tabs="['Equipos', 'Jugadores', 'Partidos']" :active-index="getTabIndex()">
-              <TabPanel :index="0">
-                <div class="tab-content">
-                  <EquiposManager @reload="cargarDatos" />
-                </div>
-              </TabPanel>
-              <TabPanel :index="1">
-                <div class="tab-content">
-                  <JugadoresManager @reload="cargarDatos" />
-                </div>
-              </TabPanel>
-              <TabPanel :index="2">
-                <div class="tab-content">
-                  <PartidosManager @reload="cargarDatos" />
-                </div>
-              </TabPanel>
-            </Tabs>
-          </v-card>
-        </div>
-      </v-container>
-    </v-main>
+    </AdminLayout>
   </v-app>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuth } from '../composables/useAuth';
 import { useFirestore } from '../composables/useFirestore';
-import Tabs from '../components/Tabs.vue';
-import TabPanel from '../components/TabPanel.vue';
-import EquiposManager from '../components/admin/EquiposManager.vue';
-import JugadoresManager from '../components/admin/JugadoresManager.vue';
-import PartidosManager from '../components/admin/PartidosManager.vue';
+import AdminLayout from '../components/AdminLayout.vue';
 
-const router = useRouter();
-const { user, logout } = useAuth();
 const { getCollection } = useFirestore();
 
-const activeSection = ref('dashboard');
 const equipos = ref([]);
 const jugadores = ref([]);
 const partidos = ref([]);
 
-const menuItems = [
-  { 
-    title: 'Dashboard', 
-    icon: 'mdi-view-dashboard', 
-    value: 'dashboard',
-    action: () => activeSection.value = 'dashboard'
-  },
-  { 
-    title: 'Equipos', 
-    icon: 'mdi-shield-star', 
-    value: 'equipos',
-    action: () => activeSection.value = 'equipos'
-  },
-  { 
-    title: 'Jugadores', 
-    icon: 'mdi-account-group', 
-    value: 'jugadores',
-    action: () => activeSection.value = 'jugadores'
-  },
-  { 
-    title: 'Partidos', 
-    icon: 'mdi-scoreboard', 
-    value: 'partidos',
-    action: () => activeSection.value = 'partidos'
-  },
-];
-
 const totalEquipos = computed(() => equipos.value.length);
 const totalJugadores = computed(() => jugadores.value.length);
 const totalPartidos = computed(() => partidos.value.length);
-const totalGoles = computed(() => {
-  return partidos.value
-    .filter(p => p.finalizado)
-    .reduce((sum, p) => {
-      const golesL = Array.isArray(p.golesLocal) ? p.golesLocal.length : (p.golesLocal || 0);
-      const golesV = Array.isArray(p.golesVisitante) ? p.golesVisitante.length : (p.golesVisitante || 0);
-      return sum + golesL + golesV;
-    }, 0);
+const partidosPendientes = computed(() => partidos.value.filter(p => !p.finalizado).length);
+
+const topGoleadores = computed(() => {
+  return [...jugadores.value]
+    .filter(j => j.goles > 0)
+    .sort((a, b) => b.goles - a.goles)
+    .slice(0, 5);
 });
-
-const getTabIndex = () => {
-  const mapping = {
-    'equipos': 0,
-    'jugadores': 1,
-    'partidos': 2
-  };
-  return mapping[activeSection.value] || 0;
-};
-
-const handleLogout = async () => {
-  await logout();
-  router.push('/login');
-};
 
 const cargarDatos = async () => {
   equipos.value = await getCollection('equipos');
@@ -276,72 +190,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.admin-main {
-  background: #F8FAFC;
-}
-
-.admin-card {
-  border: 1px solid #E2E8F0;
+.rounded-lg {
   border-radius: 12px !important;
-  background: white;
-  overflow: hidden;
-}
-
-.tab-content {
-  padding: 24px;
-}
-
-.stat-card,
-.action-card {
-  border: 1px solid #E2E8F0;
-  border-radius: 12px !important;
-  background: white;
-}
-
-.stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.stat-icon.primary {
-  background: #EFF6FF;
-}
-
-.stat-icon.success {
-  background: #F0FDF4;
-}
-
-.stat-icon.accent {
-  background: #EFF6FF;
-}
-
-.stat-icon.warning {
-  background: #FFFBEB;
-}
-
-.stat-valor {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #1E293B;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.stat-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #64748B;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.card-title {
-  padding: 20px !important;
-  background: #F8FAFC;
-  border-bottom: 1px solid #E2E8F0;
+  border: 1px solid rgb(var(--v-theme-grey-lighten-3));
 }
 </style>

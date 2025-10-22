@@ -1,100 +1,101 @@
 <template>
   <v-app>
-    <v-main class="login-main">
-      <v-container fluid class="fill-height">
-        <v-row justify="center" align="center">
-          <v-col cols="12" sm="8" md="5" lg="4" xl="3">
-            <!-- Logo y título -->
-            <div class="text-center mb-8">
-              <v-avatar color="primary" size="72" class="mb-4 elevation-3">
-                <v-icon color="white" size="40">mdi-soccer</v-icon>
+    <v-main class="bg-grey-lighten-4">
+      <v-container fluid class="fill-height pa-0">
+        <v-row no-gutters class="fill-height">
+          <!-- Panel Izquierdo - Solo Desktop -->
+          <v-col v-if="!$vuetify.display.xs" cols="12" md="6" class="d-flex align-center justify-center login-banner">
+            <div class="text-center pa-8">
+              <v-avatar size="120" color="white" class="elevation-8 mb-6">
+                <v-icon size="64" color="primary">mdi-shield-star</v-icon>
               </v-avatar>
-              <h1 class="text-h4 font-weight-bold text-grey-darken-4 mb-2">Liga Fútbol Sala</h1>
-              <p class="text-body-2 text-grey-darken-1">Panel de Administración</p>
+              <h1 class="text-h3 font-weight-bold text-white mb-4">Lliga Futbet</h1>
+              <p class="text-h6 text-white opacity-90">Panel de Administración</p>
             </div>
+          </v-col>
 
-            <!-- Tarjeta de Login -->
-            <v-card elevation="0" class="login-card">
-              <v-card-text class="pa-8">
-                <h2 class="text-h5 font-weight-bold text-grey-darken-4 mb-2">Iniciar Sesión</h2>
-                <p class="text-body-2 text-grey-darken-1 mb-6">Accede al panel de administración</p>
+          <!-- Panel Derecho - Formulario -->
+          <v-col cols="12" md="6" class="d-flex align-center justify-center pa-4">
+            <v-card 
+              :width="$vuetify.display.xs ? '100%' : 480" 
+              elevation="0"
+              class="rounded-lg pa-4"
+            >
+              <v-card-text :class="$vuetify.display.xs ? 'pa-4' : 'pa-8'">
+                <!-- Logo móvil -->
+                <div v-if="$vuetify.display.xs" class="text-center mb-6">
+                  <v-avatar size="80" color="primary" class="mb-3">
+                    <v-icon size="40" color="white">mdi-shield-star</v-icon>
+                  </v-avatar>
+                  <h1 class="text-h5 font-weight-bold">Lliga Futbet</h1>
+                  <p class="text-body-2 text-grey-darken-1">Panel de Administración</p>
+                </div>
 
-                <v-form @submit.prevent="handleLogin">
-                  <!-- Email -->
+                <h2 :class="$vuetify.display.xs ? 'text-h6' : 'text-h5'" class="font-weight-bold mb-2">
+                  Iniciar Sesión
+                </h2>
+                <p :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'" class="text-grey-darken-1 mb-6">
+                  Accede al panel de administración
+                </p>
+
+                <v-form @submit.prevent="login">
                   <v-text-field
                     v-model="email"
-                    label="Correo electrónico"
+                    label="Email"
                     type="email"
-                    variant="outlined"
-                    color="primary"
                     prepend-inner-icon="mdi-email-outline"
-                    :error-messages="emailError"
-                    class="mb-3"
+                    variant="outlined"
+                    :density="$vuetify.display.xs ? 'compact' : 'comfortable'"
+                    :disabled="loading"
                     required
+                    class="mb-4"
                   ></v-text-field>
 
-                  <!-- Password -->
                   <v-text-field
                     v-model="password"
                     label="Contraseña"
                     :type="showPassword ? 'text' : 'password'"
-                    variant="outlined"
-                    color="primary"
                     prepend-inner-icon="mdi-lock-outline"
                     :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
                     @click:append-inner="showPassword = !showPassword"
-                    :error-messages="passwordError"
-                    class="mb-4"
+                    variant="outlined"
+                    :density="$vuetify.display.xs ? 'compact' : 'comfortable'"
+                    :disabled="loading"
                     required
+                    class="mb-4"
                   ></v-text-field>
 
-                  <!-- Remember me -->
-                  <div class="d-flex justify-space-between align-center mb-6">
-                    <v-checkbox
-                      v-model="rememberMe"
-                      label="Recordarme"
-                      color="primary"
-                      hide-details
-                      density="compact"
-                    ></v-checkbox>
-                    <v-btn variant="text" size="small" color="primary">
-                      ¿Olvidaste tu contraseña?
-                    </v-btn>
-                  </div>
-
-                  <!-- Error message -->
                   <v-alert
-                    v-if="errorMessage"
+                    v-if="error"
                     type="error"
                     variant="tonal"
-                    density="compact"
+                    :density="$vuetify.display.xs ? 'compact' : 'comfortable'"
                     class="mb-4"
                   >
-                    {{ errorMessage }}
+                    {{ error }}
                   </v-alert>
 
-                  <!-- Submit button -->
                   <v-btn
                     type="submit"
                     color="primary"
-                    size="large"
+                    :size="$vuetify.display.xs ? 'default' : 'large'"
                     block
                     :loading="loading"
                     class="mb-4"
                   >
                     Iniciar Sesión
                   </v-btn>
-                </v-form>
 
-                <!-- Divider -->
-                <v-divider class="my-6"></v-divider>
-
-                <!-- Back to home -->
-                <div class="text-center">
-                  <v-btn variant="text" color="grey-darken-1" to="/" prepend-icon="mdi-arrow-left">
+                  <v-btn
+                    variant="text"
+                    color="grey-darken-1"
+                    :size="$vuetify.display.xs ? 'small' : 'default'"
+                    block
+                    @click="volverInicio"
+                  >
                     Volver al inicio
                   </v-btn>
-                </div>
+                </v-form>
               </v-card-text>
             </v-card>
           </v-col>
@@ -110,67 +111,48 @@ import { useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
 
 const router = useRouter();
-const { login } = useAuth();
+const { login: authLogin } = useAuth();
 
 const email = ref('');
 const password = ref('');
-const rememberMe = ref(false);
 const showPassword = ref(false);
 const loading = ref(false);
-const errorMessage = ref('');
-const emailError = ref('');
-const passwordError = ref('');
+const error = ref('');
 
-const handleLogin = async () => {
-  // Reset errors
-  emailError.value = '';
-  passwordError.value = '';
-  errorMessage.value = '';
-
-  // Validation
-  if (!email.value) {
-    emailError.value = 'El correo es requerido';
-    return;
-  }
-  if (!password.value) {
-    passwordError.value = 'La contraseña es requerida';
-    return;
-  }
-
+const login = async () => {
+  error.value = '';
   loading.value = true;
 
   try {
-    const success = await login(email.value, password.value);
-    
-    if (success) {
-      router.push('/admin');
-    } else {
-      errorMessage.value = 'Credenciales incorrectas';
-    }
-  } catch (error) {
-    errorMessage.value = 'Error al iniciar sesión. Intenta de nuevo.';
-    console.error('Login error:', error);
+    await authLogin(email.value, password.value);
+    router.push('/admin');
+  } catch (err) {
+    error.value = 'Credenciales incorrectas';
   } finally {
     loading.value = false;
   }
 };
+
+const volverInicio = () => {
+  router.push('/1');
+};
 </script>
 
 <style scoped>
-.login-main {
-  background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+.fill-height {
   min-height: 100vh;
 }
 
-.login-card {
-  border: 1px solid #E2E8F0;
-  border-radius: 16px !important;
-  background: white;
+.login-banner {
+  background: linear-gradient(135deg, rgb(var(--v-theme-primary)) 0%, rgb(var(--v-theme-primary-darken-1)) 100%);
 }
 
-@media (max-width: 600px) {
-  .login-card .pa-8 {
-    padding: 24px !important;
-  }
+.rounded-lg {
+  border-radius: 12px !important;
+  border: 1px solid rgb(var(--v-theme-grey-lighten-3));
+}
+
+.opacity-90 {
+  opacity: 0.9;
 }
 </style>

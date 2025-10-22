@@ -2,76 +2,132 @@
   <v-app>
     <AppHeader />
 
-    <v-main class="main-content">
-      <v-container class="py-8">
+    <v-main class="bg-grey-lighten-4">
+      <v-container :fluid="$vuetify.display.xs" class="py-6">
         <!-- Header -->
-        <div class="page-header mb-6">
-          <h1 class="text-h4 font-weight-bold text-grey-darken-4 mb-2">Clasificación</h1>
-          <p class="text-body-2 text-grey-darken-1">{{ nombreDivision }} - Tabla de posiciones actualizada</p>
+        <div class="mb-6">
+          <h1 :class="$vuetify.display.xs ? 'text-h5' : 'text-h4'" class="font-weight-bold mb-2">
+            Clasificación
+          </h1>
+          <p :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'" class="text-grey-darken-1">
+            {{ nombreDivision }} - Tabla de posiciones actualizada
+          </p>
         </div>
 
         <!-- Loading -->
-        <div v-if="loading" class="text-center py-12">
-          <v-progress-circular indeterminate color="primary" size="48"></v-progress-circular>
-        </div>
+        <v-row v-if="loading" justify="center" class="py-12">
+          <v-progress-circular indeterminate color="primary" :size="$vuetify.display.xs ? 40 : 48"></v-progress-circular>
+        </v-row>
 
         <!-- Sin datos -->
-        <v-card v-else-if="clasificacion.length === 0" elevation="0" class="empty-card">
+        <v-card v-else-if="clasificacion.length === 0" elevation="0" class="rounded-lg">
           <v-card-text class="text-center py-12">
-            <v-icon size="64" color="grey-lighten-2">mdi-table</v-icon>
-            <p class="text-h6 text-grey-darken-1 mt-4 mb-0">No hay datos de clasificación</p>
+            <v-icon :size="$vuetify.display.xs ? 48 : 64" color="grey-lighten-2">mdi-table</v-icon>
+            <p :class="$vuetify.display.xs ? 'text-body-2' : 'text-h6'" class="text-grey-darken-1 mt-4 mb-0">
+              No hay datos de clasificación
+            </p>
           </v-card-text>
         </v-card>
 
         <!-- Tabla de Clasificación -->
-        <v-card v-else elevation="0" class="clasificacion-card">
-          <v-table class="clasificacion-table">
+        <v-card v-else elevation="0" class="rounded-lg">
+          <v-table :density="$vuetify.display.xs ? 'compact' : 'default'">
             <thead>
               <tr>
-                <th class="text-center" style="width: 60px;">Pos</th>
+                <th class="text-center" style="width: 50px;">#</th>
                 <th>Equipo</th>
-                <th class="text-center" style="width: 70px;">PJ</th>
-                <th class="text-center" style="width: 70px;">PG</th>
-                <th class="text-center" style="width: 70px;">PE</th>
-                <th class="text-center" style="width: 70px;">PP</th>
-                <th class="text-center" style="width: 70px;">GF</th>
-                <th class="text-center" style="width: 70px;">GC</th>
-                <th class="text-center" style="width: 70px;">DG</th>
-                <th class="text-center font-weight-bold" style="width: 80px;">Pts</th>
+                <th v-if="!$vuetify.display.xs" class="text-center">PJ</th>
+                <th v-if="!$vuetify.display.xs" class="text-center">PG</th>
+                <th v-if="!$vuetify.display.xs" class="text-center">PE</th>
+                <th v-if="!$vuetify.display.xs" class="text-center">PP</th>
+                <th v-if="!$vuetify.display.xs" class="text-center">GF</th>
+                <th v-if="!$vuetify.display.xs" class="text-center">GC</th>
+                <th class="text-center">DG</th>
+                <th class="text-center font-weight-bold">Pts</th>
               </tr>
             </thead>
             <tbody>
               <tr 
                 v-for="(equipo, index) in clasificacion" 
                 :key="equipo.id"
-                :class="getRowClass(index)"
+                :class="index < 3 ? 'bg-blue-lighten-5' : ''"
               >
                 <td class="text-center">
-                  <div class="posicion-badge" :class="{ 'top-badge': index < 3 }">
+                  <v-chip 
+                    :size="$vuetify.display.xs ? 'x-small' : 'small'"
+                    :color="index < 3 ? 'primary' : 'grey-lighten-4'"
+                    variant="flat"
+                  >
                     {{ index + 1 }}
-                  </div>
+                  </v-chip>
                 </td>
                 <td>
-                  <div class="d-flex align-center">
-                    <v-avatar color="grey-lighten-3" size="32" class="mr-3">
-                      <v-icon size="18" :color="index < 3 ? 'primary' : 'grey-darken-1'">
-                        mdi-shield
-                      </v-icon>
-                    </v-avatar>
-                    <span class="text-body-2 font-weight-bold">{{ equipo.nombre }}</span>
-                  </div>
+  <v-row align="center" dense no-gutters>
+    <v-col cols="auto">
+      <v-avatar 
+        :size="$vuetify.display.xs ? 20 : 24"
+        :color="getLogoEquipo(equipo) ? 'transparent' : (index < 3 ? 'primary' : 'grey-darken-1')"
+        class="mr-2"
+      >
+        <v-img 
+          v-if="getLogoEquipo(equipo)" 
+          :src="getLogoEquipo(equipo)" 
+          alt="Logo"
+        >
+          <template v-slot:error>
+            <v-icon 
+              :size="$vuetify.display.xs ? 10 : 12"
+              :color="index < 3 ? 'white' : 'white'"
+            >
+              mdi-shield
+            </v-icon>
+          </template>
+        </v-img>
+        <v-icon 
+          v-else
+          :size="$vuetify.display.xs ? 10 : 12"
+          :color="index < 3 ? 'white' : 'white'"
+        >
+          mdi-shield
+        </v-icon>
+      </v-avatar>
+    </v-col>
+    <v-col>
+      <span :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'" class="font-weight-medium text-truncate">
+        {{ equipo.nombre }}
+      </span>
+    </v-col>
+  </v-row>
+</td>
+                <td v-if="!$vuetify.display.xs" class="text-center">
+                  <span class="text-body-2 text-grey-darken-1">{{ equipo.partidosJugados }}</span>
                 </td>
-                <td class="text-center text-grey-darken-1">{{ equipo.partidosJugados }}</td>
-                <td class="text-center text-grey-darken-1">{{ equipo.ganados }}</td>
-                <td class="text-center text-grey-darken-1">{{ equipo.empatados }}</td>
-                <td class="text-center text-grey-darken-1">{{ equipo.perdidos }}</td>
-                <td class="text-center text-grey-darken-1">{{ equipo.golesFavor }}</td>
-                <td class="text-center text-grey-darken-1">{{ equipo.golesContra }}</td>
-                <td class="text-center" :class="getDiferenciaClass(equipo.diferencia)">
-                  {{ equipo.diferencia > 0 ? '+' : '' }}{{ equipo.diferencia }}
+                <td v-if="!$vuetify.display.xs" class="text-center">
+                  <span class="text-body-2 text-grey-darken-1">{{ equipo.ganados }}</span>
+                </td>
+                <td v-if="!$vuetify.display.xs" class="text-center">
+                  <span class="text-body-2 text-grey-darken-1">{{ equipo.empatados }}</span>
+                </td>
+                <td v-if="!$vuetify.display.xs" class="text-center">
+                  <span class="text-body-2 text-grey-darken-1">{{ equipo.perdidos }}</span>
+                </td>
+                <td v-if="!$vuetify.display.xs" class="text-center">
+                  <span class="text-body-2 text-grey-darken-1">{{ equipo.golesFavor }}</span>
+                </td>
+                <td v-if="!$vuetify.display.xs" class="text-center">
+                  <span class="text-body-2 text-grey-darken-1">{{ equipo.golesContra }}</span>
                 </td>
                 <td class="text-center">
-                  <span class="text-h6 font-weight-bold text-primary">
+                  <v-chip 
+                    :size="$vuetify.display.xs ? 'x-small' : 'small'"
+                    :color="equipo.diferencia > 0 ? 'success' : equipo.diferencia < 0 ? 'error' : 'grey-lighten-4'"
+                    variant="flat"
+                  >
+                    {{ equipo.diferencia > 0 ? '+' : '' }}{{ equipo.diferencia }}
+                  </v-chip>
+                </td>
+                <td class="text-center">
+                  <span :class="$vuetify.display.xs ? 'text-body-1' : 'text-h6'" class="font-weight-bold text-primary">
                     {{ equipo.puntos }}
                   </span>
                 </td>
@@ -81,11 +137,17 @@
 
           <v-divider></v-divider>
 
-          <v-card-text class="py-3 px-5 bg-grey-lighten-5">
-            <div class="d-flex align-center text-caption text-grey-darken-1">
-              <div class="legend-badge top-legend mr-2"></div>
-              <span>Los primeros 3 equipos clasifican para la fase final</span>
-            </div>
+          <v-card-text :class="$vuetify.display.xs ? 'pa-3' : 'pa-4'" class="bg-grey-lighten-5">
+            <v-row align="center" dense>
+              <v-col cols="auto">
+                <div style="width: 24px; height: 4px; background: #2563EB; border-radius: 2px;"></div>
+              </v-col>
+              <v-col>
+                <span :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'" class="text-grey-darken-1">
+                  Los primeros 3 equipos clasifican
+                </span>
+              </v-col>
+            </v-row>
           </v-card-text>
         </v-card>
       </v-container>
@@ -162,29 +224,19 @@ const clasificacion = computed(() => {
 });
 
 const getGolesLocal = (partido) => {
-  if (Array.isArray(partido.golesLocal)) {
-    return partido.golesLocal.length;
-  }
+  if (Array.isArray(partido.golesLocal)) return partido.golesLocal.length;
   return partido.golesLocal || 0;
 };
 
 const getGolesVisitante = (partido) => {
-  if (Array.isArray(partido.golesVisitante)) {
-    return partido.golesVisitante.length;
-  }
+  if (Array.isArray(partido.golesVisitante)) return partido.golesVisitante.length;
   return partido.golesVisitante || 0;
 };
 
-const getRowClass = (index) => {
-  if (index < 3) return 'top-team';
-  return '';
+const getLogoEquipo = (equipo) => {
+  return equipo?.logoUrl || null;
 };
 
-const getDiferenciaClass = (diff) => {
-  if (diff > 0) return 'text-success font-weight-bold';
-  if (diff < 0) return 'text-error font-weight-bold';
-  return 'text-grey-darken-1 font-weight-medium';
-};
 
 const cargarDatos = async () => {
   const todosEquipos = await getCollection('equipos');
@@ -208,96 +260,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.main-content {
-  background: #F8FAFC;
-}
-
-.empty-card,
-.clasificacion-card {
-  border: 1px solid #E2E8F0;
+.rounded-lg {
   border-radius: 12px !important;
-  background: white;
-  overflow: hidden;
-}
-
-.clasificacion-table {
-  background: transparent;
-}
-
-.clasificacion-table thead {
-  background: #F8FAFC;
-}
-
-.clasificacion-table thead th {
-  font-size: 0.75rem !important;
-  font-weight: 700 !important;
-  text-transform: uppercase;
-  color: #64748B !important;
-  padding: 20px 16px !important;
-  border-bottom: 2px solid #E2E8F0 !important;
-}
-
-.clasificacion-table tbody td {
-  padding: 18px 16px !important;
-  font-size: 0.875rem;
-}
-
-.clasificacion-table tbody tr {
-  transition: background 0.15s ease;
-  border-bottom: 1px solid #F1F5F9;
-}
-
-.clasificacion-table tbody tr:hover {
-  background: #F8FAFC;
-}
-
-.clasificacion-table tbody tr.top-team {
-  background: #EFF6FF;
-  border-left: 4px solid #2563EB;
-}
-
-.clasificacion-table tbody tr.top-team:hover {
-  background: #DBEAFE;
-}
-
-.posicion-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: #F1F5F9;
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #64748B;
-}
-
-.posicion-badge.top-badge {
-  background: #2563EB;
-  color: white;
-}
-
-.legend-badge {
-  width: 24px;
-  height: 4px;
-  border-radius: 2px;
-}
-
-.legend-badge.top-legend {
-  background: #2563EB;
-}
-
-@media (max-width: 1200px) {
-  .clasificacion-table {
-    display: block;
-    overflow-x: auto;
-  }
-  
-  .clasificacion-table thead th,
-  .clasificacion-table tbody td {
-    padding: 12px 8px !important;
-    font-size: 0.8rem;
-  }
+  border: 1px solid rgb(var(--v-theme-grey-lighten-3));
 }
 </style>

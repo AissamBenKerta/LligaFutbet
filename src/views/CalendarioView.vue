@@ -2,91 +2,146 @@
   <v-app>
     <AppHeader />
 
-    <v-main class="main-content">
-      <v-container class="py-8">
+    <v-main class="bg-grey-lighten-4">
+      <v-container :fluid="$vuetify.display.xs" class="py-6">
         <!-- Header -->
-        <div class="page-header mb-6">
-          <h1 class="text-h4 font-weight-bold text-grey-darken-4 mb-2">Calendario</h1>
-          <p class="text-body-2 text-grey-darken-1">{{ nombreDivision }} - Próximos partidos programados</p>
+        <div class="mb-6">
+          <h1 :class="$vuetify.display.xs ? 'text-h5' : 'text-h4'" class="font-weight-bold mb-2">
+            Calendario
+          </h1>
+          <p :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'" class="text-grey-darken-1">
+            {{ nombreDivision }} - Próximos partidos programados
+          </p>
         </div>
 
         <!-- Loading -->
-        <div v-if="loading" class="text-center py-12">
-          <v-progress-circular indeterminate color="primary" size="48"></v-progress-circular>
-        </div>
+        <v-row v-if="loading" justify="center" class="py-12">
+          <v-progress-circular indeterminate color="primary" :size="$vuetify.display.xs ? 40 : 48"></v-progress-circular>
+        </v-row>
 
         <!-- Sin partidos -->
-        <v-card v-else-if="partidosProgramados.length === 0" elevation="0" class="empty-card">
+        <v-card v-else-if="partidosProgramados.length === 0" elevation="0" class="rounded-lg">
           <v-card-text class="text-center py-12">
-            <v-icon size="64" color="grey-lighten-2">mdi-calendar-blank</v-icon>
-            <p class="text-h6 text-grey-darken-1 mt-4 mb-0">No hay partidos programados</p>
+            <v-icon :size="$vuetify.display.xs ? 48 : 64" color="grey-lighten-2">mdi-calendar-blank</v-icon>
+            <p :class="$vuetify.display.xs ? 'text-body-2' : 'text-h6'" class="text-grey-darken-1 mt-4 mb-0">
+              No hay partidos programados
+            </p>
           </v-card-text>
         </v-card>
 
         <!-- Calendario por Jornadas -->
         <div v-else>
-          <div v-for="jornada in jornadasConPartidos" :key="jornada" class="jornada-section mb-6">
+          <div v-for="jornada in jornadasConPartidos" :key="jornada" class="mb-6">
             <!-- Header Jornada -->
-            <div class="jornada-header mb-4">
-              <v-icon color="primary" size="24" class="mr-2">mdi-calendar-range</v-icon>
-              <h2 class="text-h6 font-weight-bold text-grey-darken-3">Jornada {{ jornada }}</h2>
-            </div>
-
-            <!-- Partidos de la Jornada -->
-            <v-card
-              v-for="partido in partidosPorJornada(jornada)" 
-              :key="partido.id"
-              class="partido-card mb-3"
-              elevation="0"
-            >
-              <v-card-text class="pa-5">
-                <!-- Fecha y hora -->
-                <div class="text-center mb-4">
-                  <v-chip size="small" variant="flat" color="primary">
-                    <v-icon start size="16">mdi-calendar</v-icon>
-                    {{ formatearFechaCompleta(partido.fecha) }}
-                  </v-chip>
-                  <v-chip v-if="partido.estadio" size="small" variant="outlined" color="grey-darken-1" class="ml-2">
-                    <v-icon start size="16">mdi-map-marker</v-icon>
-                    {{ partido.estadio }}
-                  </v-chip>
-                </div>
-
-                <!-- Enfrentamiento -->
-                <div class="vs-container">
-                  <!-- Equipo Local -->
-                  <div class="equipo-vs">
-                    <v-avatar color="primary" size="56">
-                      <v-icon size="32" color="white">mdi-shield</v-icon>
-                    </v-avatar>
-                    <div class="equipo-texto">
-                      <div class="text-h6 font-weight-bold text-grey-darken-4">
-                        {{ getNombreEquipo(partido.equipoLocalId) }}
-                      </div>
-                      <div class="text-caption text-grey-darken-1">Local</div>
-                    </div>
-                  </div>
-
-                  <!-- VS -->
-                  <div class="vs-badge">
-                    <span class="vs-texto">VS</span>
-                  </div>
-
-                  <!-- Equipo Visitante -->
-                  <div class="equipo-vs">
-                    <div class="equipo-texto text-right">
-                      <div class="text-h6 font-weight-bold text-grey-darken-4">
-                        {{ getNombreEquipo(partido.equipoVisitanteId) }}
-                      </div>
-                      <div class="text-caption text-grey-darken-1">Visitante</div>
-                    </div>
-                    <v-avatar color="grey-darken-1" size="56">
-                      <v-icon size="32" color="white">mdi-shield</v-icon>
-                    </v-avatar>
-                  </div>
-                </div>
+            <v-card elevation="0" class="rounded-lg mb-3 bg-grey-lighten-5">
+              <v-card-text :class="$vuetify.display.xs ? 'pa-3' : 'pa-4'">
+                <v-row align="center" dense>
+                  <v-col cols="auto">
+                    <v-icon color="primary" :size="$vuetify.display.xs ? 20 : 24">mdi-calendar-range</v-icon>
+                  </v-col>
+                  <v-col>
+                    <span :class="$vuetify.display.xs ? 'text-body-1' : 'text-h6'" class="font-weight-bold">
+                      Jornada {{ jornada }}
+                    </span>
+                  </v-col>
+                </v-row>
               </v-card-text>
             </v-card>
+
+            <!-- Partidos de la Jornada -->
+            <v-row dense>
+              <v-col
+                v-for="partido in partidosPorJornada(jornada)" 
+                :key="partido.id"
+                cols="12"
+              >
+                <v-card class="rounded-lg" elevation="0">
+                  <v-card-text :class="$vuetify.display.xs ? 'pa-3' : 'pa-5'">
+                    <!-- Fecha y hora -->
+                    <v-row class="mb-4" justify="center" dense>
+                      <v-col cols="auto">
+                        <v-chip :size="$vuetify.display.xs ? 'small' : 'default'" variant="flat" color="primary">
+                          <v-icon start :size="$vuetify.display.xs ? 14 : 16">mdi-calendar</v-icon>
+                          {{ formatearFechaCompleta(partido.fecha) }}
+                        </v-chip>
+                      </v-col>
+                      <v-col v-if="partido.estadio" cols="auto">
+                        <v-chip :size="$vuetify.display.xs ? 'small' : 'default'" variant="outlined">
+                          <v-icon start :size="$vuetify.display.xs ? 14 : 16">mdi-map-marker</v-icon>
+                          {{ partido.estadio }}
+                        </v-chip>
+                      </v-col>
+                    </v-row>
+
+                    <!-- Enfrentamiento -->
+                    <v-row align="center" dense>
+                      <!-- Equipo Local -->
+                      <v-col cols="5">
+                        <v-row align="center" dense justify="center">
+                          <v-col cols="12" class="text-center">
+                            <v-avatar 
+  :size="$vuetify.display.xs ? 48 : 64" 
+  :color="getLogoEquipo(partido.equipoLocalId) ? 'transparent' : 'primary'"
+  class="mb-2"
+>
+  <v-img 
+    v-if="getLogoEquipo(partido.equipoLocalId)" 
+    :src="getLogoEquipo(partido.equipoLocalId)" 
+    alt="Logo"
+  >
+    <template v-slot:error>
+      <v-icon :size="$vuetify.display.xs ? 24 : 32" color="white">mdi-shield</v-icon>
+    </template>
+  </v-img>
+  <v-icon v-else :size="$vuetify.display.xs ? 24 : 32" color="white">mdi-shield</v-icon>
+</v-avatar>
+                            <div :class="$vuetify.display.xs ? 'text-body-2' : 'text-h6'" class="font-weight-bold">
+                              {{ getNombreEquipo(partido.equipoLocalId) }}
+                            </div>
+                            <div v-if="!$vuetify.display.xs" class="text-caption text-grey-darken-1">Local</div>
+                          </v-col>
+                        </v-row>
+                      </v-col>
+
+                      <!-- VS -->
+                      <v-col cols="2" class="text-center">
+                        <div :class="$vuetify.display.xs ? 'text-h6' : 'text-h5'" class="font-weight-black text-grey-lighten-1">
+                          VS
+                        </div>
+                      </v-col>
+
+                      <!-- Equipo Visitante -->
+                      <v-col cols="5">
+                        <v-row align="center" dense justify="center">
+                          <v-col cols="12" class="text-center">
+                            <v-avatar 
+  :size="$vuetify.display.xs ? 48 : 64" 
+  :color="getLogoEquipo(partido.equipoVisitanteId) ? 'transparent' : 'grey-darken-1'"
+  class="mb-2"
+>
+  <v-img 
+    v-if="getLogoEquipo(partido.equipoVisitanteId)" 
+    :src="getLogoEquipo(partido.equipoVisitanteId)" 
+    alt="Logo"
+  >
+    <template v-slot:error>
+      <v-icon :size="$vuetify.display.xs ? 24 : 32" color="white">mdi-shield</v-icon>
+    </template>
+  </v-img>
+  <v-icon v-else :size="$vuetify.display.xs ? 24 : 32" color="white">mdi-shield</v-icon>
+</v-avatar>
+                            <div :class="$vuetify.display.xs ? 'text-body-2' : 'text-h6'" class="font-weight-bold">
+                              {{ getNombreEquipo(partido.equipoVisitanteId) }}
+                            </div>
+                            <div v-if="!$vuetify.display.xs" class="text-caption text-grey-darken-1">Visitante</div>
+                          </v-col>
+                        </v-row>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
           </div>
         </div>
       </v-container>
@@ -130,13 +185,17 @@ const formatearFechaCompleta = (fecha) => {
   if (!fecha) return '';
   const date = new Date(fecha);
   return date.toLocaleDateString('es-ES', { 
-    weekday: 'long',
+    weekday: 'short',
     day: 'numeric',
-    month: 'long',
-    year: 'numeric',
+    month: 'short',
     hour: '2-digit',
     minute: '2-digit'
   });
+};
+
+const getLogoEquipo = (equipoId) => {
+  const equipo = equipos.value.find(e => e.id === equipoId);
+  return equipo?.logoUrl || null;
 };
 
 const cargarDatos = async () => {
@@ -161,89 +220,8 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.main-content {
-  background: #F8FAFC;
-}
-
-.empty-card {
-  border: 1px solid #E2E8F0;
+.rounded-lg {
   border-radius: 12px !important;
-  background: white;
-}
-
-.jornada-header {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #E2E8F0;
-}
-
-.partido-card {
-  border: 1px solid #E2E8F0;
-  border-radius: 12px !important;
-  background: white;
-}
-
-.vs-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  padding: 16px 0;
-}
-
-.equipo-vs {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex: 1;
-}
-
-.equipo-texto {
-  flex: 1;
-  min-width: 0;
-}
-
-.equipo-texto > div {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.vs-badge {
-  padding: 0 24px;
-}
-
-.vs-texto {
-  font-size: 2rem;
-  font-weight: 900;
-  color: #CBD5E1;
-  letter-spacing: 2px;
-}
-
-@media (max-width: 960px) {
-  .vs-container {
-    flex-direction: column;
-    gap: 16px;
-  }
-  
-  .equipo-vs {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .equipo-texto {
-    text-align: center !important;
-  }
-  
-  .vs-badge {
-    padding: 16px 0;
-  }
-  
-  .vs-texto {
-    font-size: 1.5rem;
-  }
+  border: 1px solid rgb(var(--v-theme-grey-lighten-3));
 }
 </style>
