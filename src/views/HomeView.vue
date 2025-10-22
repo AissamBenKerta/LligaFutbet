@@ -224,48 +224,58 @@
 
               <v-divider></v-divider>
 
-              <v-list class="pa-0" density="compact">
-                <v-list-item
-                  v-for="(jugador, index) in maximosGoleadores.slice(0, 10)"
-                  :key="jugador.id"
-                  class="py-2"
-                >
-                  <template v-slot:prepend>
-                    <v-avatar 
-                      :size="$vuetify.display.xs ? 28 : 32"
-                      color="grey-lighten-4"
-                    >
-                      <span 
-                        :class="[
-                          $vuetify.display.xs ? 'text-caption' : 'text-body-2',
-                          'font-weight-bold',
-                          index < 3 ? 'text-primary' : 'text-grey-darken-1'
-                        ]"
-                      >
-                        {{ index + 1 }}
-                      </span>
-                    </v-avatar>
-                  </template>
+              <!-- Máximos Goleadores -->
+<v-list class="pa-0" density="compact">
+  <v-list-item
+    v-for="(jugador, index) in maximosGoleadores.slice(0, 10)"
+    :key="jugador.id"
+    class="py-2"
+  >
+    <template v-slot:prepend>
+      <v-avatar 
+        :size="$vuetify.display.xs ? 28 : 32"
+        :color="index === 0 ? 'success' : 'grey-lighten-4'"
+      >
+        <span 
+          :class="[
+            $vuetify.display.xs ? 'text-caption' : 'text-body-2',
+            'font-weight-bold',
+            index === 0 ? 'text-white' : 'text-grey-darken-1'
+          ]"
+        >
+          {{ index + 1 }}
+        </span>
+      </v-avatar>
+    </template>
 
-                  <v-list-item-title :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'" class="font-weight-medium">
-                    {{ jugador.nombre }} {{ jugador.apellidos }}
-                  </v-list-item-title>
+    <v-list-item-title :class="$vuetify.display.xs ? 'text-caption' : 'text-body-2'" class="font-weight-medium">
+      {{ jugador.nombre }} {{ jugador.apellidos }}
+    </v-list-item-title>
 
-                  <v-list-item-subtitle :class="$vuetify.display.xs ? 'text-caption' : 'text-caption'">
-                    {{ getNombreEquipo(jugador.equipoId) }}
-                  </v-list-item-subtitle>
+    <v-list-item-subtitle :class="$vuetify.display.xs ? 'text-caption' : 'text-caption'">
+      {{ getNombreEquipo(jugador.equipoId) }}
+    </v-list-item-subtitle>
 
-                  <template v-slot:append>
-                    <v-chip 
-                      :size="$vuetify.display.xs ? 'x-small' : 'small'"
-                      color="grey-lighten-4"
-                    >
-                      <v-icon start :size="$vuetify.display.xs ? 12 : 16">mdi-soccer</v-icon>
-                      {{ jugador.goles || 0 }}
-                    </v-chip>
-                  </template>
-                </v-list-item>
-              </v-list>
+    <template v-slot:append>
+  <v-chip 
+    :size="$vuetify.display.xs ? 'x-small' : 'small'"
+    :color="index === 0 ? 'success' : 'grey-lighten-4'"
+    :class="index === 0 ? 'text-grey-darken-1' : 'text-grey-darken-1'"
+  >
+    <v-icon 
+      start 
+      :size="$vuetify.display.xs ? 12 : 16"
+      :color="index === 0 ? 'success' : 'grey-darken-1'"
+    >
+      mdi-soccer
+    </v-icon>
+    {{ jugador.goles || 0 }}
+  </v-chip>
+</template>
+
+  </v-list-item>
+</v-list>
+
             </v-card>
 
             <!-- Clasificación -->
@@ -458,6 +468,7 @@ const getScoreClass = (score1, score2) => {
 const verDetallePartido = (partido) => {
   router.push(`/${divisionSlug.value}/partido/${partido.id}`);
 };
+
 const getLogoEquipo = (equipoId) => {
   const equipo = equipos.value.find(e => e.id === equipoId);
   return equipo?.logoUrl || null;
